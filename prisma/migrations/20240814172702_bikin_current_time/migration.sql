@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "pembelian" ADD COLUMN     "waktuBikin" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

@@ -14,9 +14,31 @@ datasource db {
 }
 
 model Batik {
-  id         Int    @id @default(autoincrement())
-  typeBatik  String @db.VarChar(100)
-  totalBatik Int    @db.Integer
+  id         Int         @id @default(autoincrement())
+  typeBatik  String      @db.VarChar(100)
+  totalBatik Int         @db.Integer
+  Pembelian  Pembelian[]
 
   @@map("batik")
+}
+
+model Customer {
+  id           Int         @id @default(autoincrement())
+  namaCustomer String      @db.VarChar(100)
+  Pembelian    Pembelian[]
+
+  @@map("customer")
+}
+
+model Pembelian {
+  id Int @id @default(autoincrement())
+
+  batikId    Int      @db.Integer
+  batik      Batik    @relation(fields: [batikId], references: [id])
+  quantity   Int
+  customerId Int      @db.Integer
+  customer   Customer @relation(fields: [customerId], references: [id])
+  waktuBikin DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("pembelian")
 }
