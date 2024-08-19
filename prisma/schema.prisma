@@ -13,11 +13,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum JenisBatik {
+  Sutra
+  Katun
+}
+
 model Batik {
-  id         Int         @id @default(autoincrement())
-  typeBatik  String      @db.VarChar(100)
-  totalBatik Int         @db.Integer
-  Pembelian  Pembelian[]
+  id          Int         @id @default(autoincrement())
+  typeBatik   String      @db.VarChar(100)
+  totalBatik  Int         @db.Integer
+  jenisBatiks JenisBatik
+  Pembelian   Pembelian[]
 
   @@map("batik")
 }

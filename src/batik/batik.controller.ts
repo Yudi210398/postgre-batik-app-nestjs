@@ -25,7 +25,7 @@ export class BatikController {
 
   @Get()
   async getData() {
-    return await this.batikservice.getBatik();
+    return await this.batikservice.getBatikPembelian();
   }
 
   @Patch('searh/:id')

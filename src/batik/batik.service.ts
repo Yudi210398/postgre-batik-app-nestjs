@@ -19,7 +19,15 @@ export class BatikService {
       include: { Pembelian: { include: { customer: true } } },
       where: { typeBatik: 'PA' },
     });
-    console.log(hasilGEt, `gess`);
+
+    return hasilGEt;
+  }
+
+  async getBatikPembelian() {
+    const hasilGEt = await this.prismaService.batik.findMany({
+      include: { Pembelian: { include: { customer: true } } },
+    });
+
     return hasilGEt;
   }
 
