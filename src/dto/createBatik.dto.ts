@@ -6,4 +6,7 @@ export class CreateBatikDto {
 
   @IsInt({ message: 'data harus number' })
   totalBatik: number;
+
+  @IsNotEmpty({ message: 'Tidak Boleh kosong,' })
+  jenisBatik: string;
 }

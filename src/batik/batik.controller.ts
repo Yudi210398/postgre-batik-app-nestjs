@@ -13,7 +13,7 @@ import { BatikService } from './batik.service';
 import { CreateBatikDto } from 'src/dto/createBatik.dto';
 import { UpdateBatiks } from 'src/dto/updateBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
-@Controller('batik')
+@Controller('batiks')
 export class BatikController {
   constructor(private readonly batikservice: BatikService) {}
 

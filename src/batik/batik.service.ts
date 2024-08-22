@@ -10,14 +10,17 @@ export class BatikService {
 
   async createBatik(datas: CreateBatikDto) {
     return await this.prismaService.batik.create({
-      data: { typeBatik: datas.typeBatik, totalBatik: +datas.totalBatik },
+      data: {
+        typeBatik: datas.typeBatik,
+        totalBatik: +datas.totalBatik,
+        jenisBatik: datas.jenisBatik,
+      },
     });
   }
 
   async getBatik() {
     const hasilGEt = await this.prismaService.batik.findMany({
       include: { Pembelian: { include: { customer: true } } },
-      where: { typeBatik: 'PA' },
     });
 
     return hasilGEt;
