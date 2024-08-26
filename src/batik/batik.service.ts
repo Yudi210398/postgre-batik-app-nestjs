@@ -3,7 +3,7 @@ import { CreateBatikDto } from 'src/dto/createBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { UpdateBatiks } from 'src/dto/updateBatik.dto';
 import { PrismaPostgresService } from 'src/prisma-postgres/prisma-postgres.service';
-
+import { DateTime } from 'luxon';
 @Injectable()
 export class BatikService {
   constructor(private prismaService: PrismaPostgresService) {}
@@ -22,11 +22,30 @@ export class BatikService {
     const hasilGEt = await this.prismaService.batik.findMany({
       include: { Pembelian: { include: { customer: true } } },
     });
-
     return hasilGEt;
   }
 
   async getBatikPembelian() {
+    const data = new Date();
+    const year = data.getFullYear();
+    const month = data.getMonth();
+    const day = data.getDay();
+    const hours = data.getHours();
+    const minute = data.getMinutes();
+
+    const dates = DateTime.fromObject({
+      year,
+      month,
+      day,
+      hour: hours,
+      minute,
+    });
+
+    const d = new Intl.DateTimeFormat('id-ID', {
+      dateStyle: 'full',
+      timeStyle: 'medium',
+    });
+    console.log(dates.toISO(), new Date(), d.format(new Date()));
     const hasilGEt = await this.prismaService.batik.findMany({
       include: { Pembelian: { include: { customer: true } } },
     });
@@ -53,7 +72,6 @@ export class BatikService {
       const getBatik = await prisma.batik.findUnique({
         where: { id: datass.batikId },
       });
-
       await prisma.batik.update({
         where: { id: datass.batikId },
         data: { totalBatik: getBatik.totalBatik - datass.quantity },
@@ -64,6 +82,8 @@ export class BatikService {
           batikId: datass.batikId,
           customerId: datass.customerId,
           quantity: datass.quantity,
+
+          waktuBikin: new Date(),
         },
         include: { batik: true, customer: true },
       });

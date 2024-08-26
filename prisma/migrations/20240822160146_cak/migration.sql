@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "pembelian" ALTER COLUMN "waktuBikin" SET DEFAULT CURRENT_TIMESTAMP;

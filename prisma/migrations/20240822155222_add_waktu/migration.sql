@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "pembelian" ADD COLUMN     "waktuBikin" TIMESTAMPTZ(3) NOT NULL DEFAULT (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta');
