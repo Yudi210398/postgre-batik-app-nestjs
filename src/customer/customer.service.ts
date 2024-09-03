@@ -11,4 +11,11 @@ export class CustomerService {
       data: { namaCustomer: customer.namaCustomer },
     });
   }
+
+  async getCustomer() {
+    const hasilGEt = await this.prismaService.customer.findMany({
+      include: { Pembelian: { include: { batik: true } } },
+    });
+    return hasilGEt;
+  }
 }

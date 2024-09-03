@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import { CreateBatikDto } from 'src/dto/createBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
@@ -45,7 +46,7 @@ export class BatikService {
       dateStyle: 'full',
       timeStyle: 'medium',
     });
-    console.log(dates.toISO(), new Date(), d.format(new Date()));
+    console.log(dates, d);
     const hasilGEt = await this.prismaService.batik.findMany({
       include: { Pembelian: { include: { customer: true } } },
     });
@@ -67,6 +68,7 @@ export class BatikService {
     });
     return data;
   }
+
   async pembelianBatik(datass: PembelianDTO) {
     this.prismaService.$transaction(async (prisma) => {
       const getBatik = await prisma.batik.findUnique({
@@ -87,6 +89,14 @@ export class BatikService {
         },
         include: { batik: true, customer: true },
       });
+      console.log(`datass`);
+      await axios
+        .create({
+          baseURL: 'http://localhost:3000/api',
+          timeout: 5000,
+        })
+        .post('/revalidate', null, { params: { tag: 'product' } });
+
       return datas;
     });
   }
