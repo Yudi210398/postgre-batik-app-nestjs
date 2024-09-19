@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { BatikService } from './batik.service';
 import { CreateBatikDto } from 'src/dto/createBatik.dto';
 import { UpdateBatiks } from 'src/dto/updateBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 @Controller('batiks')
 export class BatikController {
   constructor(private readonly batikservice: BatikService) {}

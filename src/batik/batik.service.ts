@@ -89,7 +89,6 @@ export class BatikService {
         },
         include: { batik: true, customer: true },
       });
-      console.log(`datass`);
       await axios
         .create({
           baseURL: 'http://localhost:3000/api',

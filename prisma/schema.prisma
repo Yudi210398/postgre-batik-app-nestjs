@@ -47,8 +47,9 @@ model Pembelian {
 model Admin {
   id Int @id @default(autoincrement())
 
-  email    String @unique @db.VarChar(100)
-  password String @db.VarChar(100)
+  email        String @unique @db.VarChar(100)
+  password     String @db.VarChar(100)
+  refreshToken String @default("kosong")
 
   @@map("admins")
 }

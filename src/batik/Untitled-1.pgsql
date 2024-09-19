@@ -1,6 +1,7 @@
 SELECT * from customer;
 SELECT * from batik;
 SELECT * FROM pembelian;
+SELECT * from admins;
 
 
 
