@@ -1,10 +1,11 @@
-import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import { CreateBatikDto } from 'src/dto/createBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { UpdateBatiks } from 'src/dto/updateBatik.dto';
 import { PrismaPostgresService } from 'src/prisma-postgres/prisma-postgres.service';
 import { DateTime } from 'luxon';
+import { JwtPayload } from 'src/func/interface';
+import { revalidate } from 'src/func/fetch';
 @Injectable()
 export class BatikService {
   constructor(private prismaService: PrismaPostgresService) {}
@@ -26,14 +27,14 @@ export class BatikService {
     return hasilGEt;
   }
 
-  async getBatikPembelian() {
+  async getBatikPembelian(datass: JwtPayload) {
     const data = new Date();
     const year = data.getFullYear();
     const month = data.getMonth();
     const day = data.getDay();
     const hours = data.getHours();
     const minute = data.getMinutes();
-
+    const time = new Date();
     const dates = DateTime.fromObject({
       year,
       month,
@@ -45,8 +46,8 @@ export class BatikService {
     const d = new Intl.DateTimeFormat('id-ID', {
       dateStyle: 'full',
       timeStyle: 'medium',
-    });
-    console.log(dates, d);
+    }).format(time);
+    console.log(d);
     const hasilGEt = await this.prismaService.batik.findMany({
       include: { Pembelian: { include: { customer: true } } },
     });
@@ -58,6 +59,7 @@ export class BatikService {
     const hasilGet = await this.prismaService.pembelian.findMany({
       include: { batik: true, customer: true },
     });
+    console.log(hasilGet, `wiw`);
     return hasilGet;
   }
 
@@ -69,7 +71,15 @@ export class BatikService {
     return data;
   }
 
+  async getSeacrhId(id: number) {}
+
   async pembelianBatik(datass: PembelianDTO) {
+    const time = new Date();
+    const d = new Intl.DateTimeFormat('id-ID', {
+      dateStyle: 'full',
+      timeStyle: 'medium',
+    }).format(time);
+    console.log(d);
     this.prismaService.$transaction(async (prisma) => {
       const getBatik = await prisma.batik.findUnique({
         where: { id: datass.batikId },
@@ -85,18 +95,15 @@ export class BatikService {
           customerId: datass.customerId,
           quantity: datass.quantity,
 
-          waktuBikin: new Date(),
+          waktuBikin: time,
         },
         include: { batik: true, customer: true },
       });
-      await axios
-        .create({
-          baseURL: 'http://localhost:3000/api',
-          timeout: 5000,
-        })
-        .post('/revalidate', null, { params: { tag: 'product' } });
-
+      await revalidate();
       return datas;
     });
+    return {
+      mesaage: 'Berhasil dibeli',
+    };
   }
 }

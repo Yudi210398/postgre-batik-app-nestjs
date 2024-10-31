@@ -39,7 +39,7 @@ model Pembelian {
   quantity   Int
   customerId Int      @db.Integer
   customer   Customer @relation(fields: [customerId], references: [id])
-  waktuBikin DateTime @default(now()) @db.Timestamptz(3)
+  waktuBikin DateTime @default(now())
 
   @@map("pembelian")
 }

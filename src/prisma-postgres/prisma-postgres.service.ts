@@ -7,7 +7,7 @@ export class PrismaPostgresService
   implements OnModuleInit
 {
   constructor() {
-    super({ errorFormat: 'pretty', log: ['error', 'info', 'warn', 'query'] });
+    super({ log: ['error', 'info', 'warn', 'query'] });
   }
   async onModuleInit() {
     await this.$connect()

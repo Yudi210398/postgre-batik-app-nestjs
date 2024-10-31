@@ -1,48 +1,57 @@
 import {
+  CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Observable } from 'rxjs';
-import { Response } from 'express'; // Pastikan ini di-import
-import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
-
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+import { PrismaPostgresService } from 'src/prisma-postgres/prisma-postgres.service';
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-  // Override handleRequest untuk menangani error JWT
-  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
-    const response: Response = context.switchToHttp().getResponse(); // Akses ke response
+export class JwtGuard implements CanActivate {
+  constructor(
+    private jwtService: JwtService,
+    private prismaService: PrismaPostgresService,
+  ) {}
 
-    // Cek apakah ada error atau user tidak ditemukan
-    if (err || !user) {
-      // Token kadaluarsa
-      if (info instanceof TokenExpiredError) {
-        response.status(401); // Set status code menjadi 401 Unauthorized
-        console.log('Status Code:', response.statusCode); // Log status code
-        throw new UnauthorizedException(
-          'Token sudah kadaluarsa, silakan login kembali',
-        );
-      }
-      // Token tidak valid
-      else if (info instanceof JsonWebTokenError) {
-        response.status(401); // Set status code menjadi 401 Unauthorized
-        console.log('Status Code:', response.statusCode); // Log status code
-        throw new UnauthorizedException('Token tidak valid');
-      }
-      // Error lain
-      response.status(401); // Set status code menjadi 401 Unauthorized
-      console.log('Status Code:', response.statusCode); // Log status code
-      throw new UnauthorizedException('Tidak diizinkan');
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    // const isPublicAccess = this.isPublicRequest(request);
+    const token = this.extractTokenFromCookie(request);
+    const tokenHeader = this.extractTokenFromHeader(request);
+
+    if (!token && !tokenHeader) throw new UnauthorizedException();
+    const tokenresult = token ? token : tokenHeader;
+    try {
+      const payload = await this.jwtService.verifyAsync(tokenresult, {
+        secret: process.env.ACCES_TOKEN,
+      });
+      request['admin'] = payload;
+    } catch {
+      throw new UnauthorizedException();
     }
-
-    // Jika token valid, lanjutkan
-    return user;
+    return true;
   }
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    return super.canActivate(context);
+  private isPublicRequest(request: Request): string {
+    // Contoh pengecekan berdasarkan port
+    const host = request.headers.host; // Mendapatkan host dengan format "localhost:9001"
+    const port = host?.split(':')[1]; // Mengambil port dari host
+
+    // Jika request datang dari port 9001 (Public Access), return true
+    return port;
+  }
+
+  private extractTokenFromHeader(request: Request) {
+    const host = request.headers.host;
+    console.log(host);
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+
+  private extractTokenFromCookie(req: Request): string | undefined {
+    const token = req.cookies?.jwt;
+
+    return token;
   }
 }
