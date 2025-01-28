@@ -17,6 +17,7 @@ import { UpdateBatiks } from 'src/dto/updateBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Request } from 'express';
+import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
 
 @UseGuards(JwtGuard)
 @Controller('batiks')
@@ -32,7 +33,6 @@ export class BatikController {
   @Get()
   async getData(@Req() req: Request) {
     const data = req['admin'];
-    console.log(data, `oy `);
     return await this.batikservice.getBatikPembelian(data);
   }
 
@@ -43,16 +43,30 @@ export class BatikController {
   }
 
   @Patch('update/:id')
-  updateBatik(
+  async updateBatik(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateBatiks,
   ) {
     return this.batikservice.updateBatik(id, data);
   }
 
+  @Get('getDataBatik')
+  async getBatikData() {
+    return await this.batikservice.getDataBatikDinamis();
+  }
+
+  @Get('/:id')
+  async getBatikId(@Param('id', ParseIntPipe) id: number) {
+    return await this.batikservice.getSeacrhBatikId(id);
+  }
+
+  @Post('tambahbatik')
+  async tambahBatik(@Body() datas: BatikAddDTO) {
+    return await this.batikservice.penambahanBatiks(datas);
+  }
+
   @Post('beli')
   async beliBatik(@Body() datas: PembelianDTO) {
-    console.log(process.env.NODE_ENV, `wer`);
     return await this.batikservice.pembelianBatik(datas);
   }
 }

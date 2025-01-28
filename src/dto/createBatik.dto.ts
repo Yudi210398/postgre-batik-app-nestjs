@@ -1,11 +1,11 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateBatikDto {
   @IsNotEmpty({ message: 'Tidak Boleh kosong,' })
   typeBatik: string;
 
-  @IsInt({ message: 'data harus number' })
-  totalBatik: number;
+  @IsNumber({}, { message: 'Harus Angka' })
+  stockBatikAwal: number;
 
   @IsNotEmpty({ message: 'Tidak Boleh kosong,' })
   jenisBatik: string;

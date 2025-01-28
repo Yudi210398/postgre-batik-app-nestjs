@@ -12,4 +12,6 @@ export class PembelianDTO {
   @IsInt({ message: 'data harus number' })
   @IsNotEmpty({ message: 'quantity Tidak Boleh kosong,' })
   quantity: number;
+
+  nomorBon?: string;
 }

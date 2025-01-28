@@ -12,6 +12,7 @@ import {
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from 'src/dto/customerDTO/createCustomer.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+// import { Cron, CronExpression } from '@nestjs/schedule';
 
 @UseGuards(JwtGuard)
 @Controller('customer')
@@ -24,13 +25,20 @@ export class CustomerController {
     return this.customerService.createCustomer(customer);
   }
 
+  // @Cron(CronExpression.EVERY_10_SECONDS)
   @Get()
   async getCustomer() {
+    console.log(`hai`);
     return await this.customerService.getCustomer();
   }
 
   @Get('cari/:id')
   async getPembelianCustomer(@Param('id', ParseIntPipe) id: number) {
     return this.customerService.getPembelianCustomer(id);
+  } 
+  
+  @Get(':id')
+  async getPembelianCustomers(@Param('id', ParseIntPipe) id: number) {
+    return this.customerService.getSeacrhIdCustomer(id);
   }
 }

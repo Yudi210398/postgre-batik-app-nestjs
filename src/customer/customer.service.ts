@@ -13,7 +13,6 @@ export class CustomerService {
     });
 
     await revalidate();
-    console.log(datass, `woy`);
     return datass;
   }
 
@@ -23,6 +22,14 @@ export class CustomerService {
       include: { Pembelian: { include: { batik: true } } },
     });
     return getPembeli;
+  }
+
+  async getSeacrhIdCustomer(id: number) {
+    const data = await this.prismaService.pembelian.findMany({
+      where: { customerId: id },
+      include: { batik: true, customer: true },
+    });
+    return data;
   }
 
   async getCustomer() {

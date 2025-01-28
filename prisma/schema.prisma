@@ -14,11 +14,14 @@ datasource db {
 }
 
 model Batik {
-  id         Int         @id @default(autoincrement())
-  typeBatik  String      @db.VarChar(100)
-  totalBatik Int         @db.Integer
-  jenisBatik String      @db.VarChar(100)
-  Pembelian  Pembelian[]
+  id              Int               @id @default(autoincrement())
+  typeBatik       String            @db.VarChar(100)
+  stockBatikAwal  Int               @db.Integer
+  jenisBatik      String            @db.VarChar(100)
+  waktuBikin      DateTime          @default(now())
+  Pembelian       Pembelian[]
+  penambahanStock penambahanStock[]
+  laporanBulanan  laporanBulanan[]
 
   @@map("batik")
 }
@@ -26,6 +29,7 @@ model Batik {
 model Customer {
   id           Int         @id @default(autoincrement())
   namaCustomer String      @db.VarChar(100)
+  nomorTelp    String      @default("Tidak ada") @db.VarChar(100)
   Pembelian    Pembelian[]
 
   @@map("customer")
@@ -40,6 +44,7 @@ model Pembelian {
   customerId Int      @db.Integer
   customer   Customer @relation(fields: [customerId], references: [id])
   waktuBikin DateTime @default(now())
+  nomorBon   String   @unique @default(dbgenerated("gen_random_uuid()"))
 
   @@map("pembelian")
 }
@@ -52,4 +57,28 @@ model Admin {
   refreshToken String @default("kosong")
 
   @@map("admins")
+}
+
+model laporanBulanan {
+  id                Int      @id @default(autoincrement())
+  batikId           Int      @db.Integer
+  batik             Batik    @relation(fields: [batikId], references: [id])
+  stok_awal_bulan   Int      @db.Integer
+  stok_akhir_bulan  Int      @db.Integer
+  bulan             DateTime @default(now())
+  jumlah_terjual    Int      @db.Integer
+  jumlah_penambahan Int      @default(0) @db.Integer
+
+  @@map("LaporanBulanan")
+}
+
+model penambahanStock {
+  id               Int      @id @default(autoincrement())
+  batikId          Int      @db.Integer
+  batik            Batik    @relation(fields: [batikId], references: [id])
+  alasanPenambahan String   @db.Text()
+  quantity         Int      @db.Integer
+  tanggal          DateTime @default(now())
+
+  @@map("PenambahanStock")
 }

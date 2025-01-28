@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.enableCors({
-    origin: 'http://localhost:3000', // Ganti ini dengan URL frontend kamu
+    origin: 'http://localhost:3000',
     credentials: true, // Mengizinkan pengiriman cookie
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Ijinkan method-method ini
   });

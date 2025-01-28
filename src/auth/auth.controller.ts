@@ -9,7 +9,6 @@ export class AuthController {
 
   @Post('login')
   login(@Body() data: CreateAdminDTO, @Res() res: Response) {
-    console.log(`cek fe`);
     return this.authservice.login(data, res);
   }
 

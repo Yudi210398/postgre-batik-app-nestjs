@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateBatikDto } from 'src/dto/createBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { UpdateBatiks } from 'src/dto/updateBatik.dto';
@@ -6,6 +6,7 @@ import { PrismaPostgresService } from 'src/prisma-postgres/prisma-postgres.servi
 import { DateTime } from 'luxon';
 import { JwtPayload } from 'src/func/interface';
 import { revalidate } from 'src/func/fetch';
+import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
 @Injectable()
 export class BatikService {
   constructor(private prismaService: PrismaPostgresService) {}
@@ -14,7 +15,7 @@ export class BatikService {
     return await this.prismaService.batik.create({
       data: {
         typeBatik: datas.typeBatik,
-        totalBatik: +datas.totalBatik,
+        stockBatikAwal: +datas.stockBatikAwal,
         jenisBatik: datas.jenisBatik,
       },
     });
@@ -42,7 +43,7 @@ export class BatikService {
       hour: hours,
       minute,
     });
-
+    console.log(dates, datass);
     const d = new Intl.DateTimeFormat('id-ID', {
       dateStyle: 'full',
       timeStyle: 'medium',
@@ -59,19 +60,47 @@ export class BatikService {
     const hasilGet = await this.prismaService.pembelian.findMany({
       include: { batik: true, customer: true },
     });
-    console.log(hasilGet, `wiw`);
     return hasilGet;
   }
 
   async updateBatik(id: number, datas: UpdateBatiks) {
     const data = await this.prismaService.batik.update({
       where: { id },
-      data: { totalBatik: datas.totalBatik, typeBatik: datas.typeBatik },
+      data: {
+        stockBatikAwal: datas.stockBatikAwal,
+        typeBatik: datas.typeBatik,
+      },
     });
     return data;
   }
 
-  async getSeacrhId(id: number) {}
+  async getSeacrhBatikId(id: number) {
+    const data = await this.prismaService.pembelian.findMany({
+      where: { batikId: id },
+      include: { batik: true, customer: true },
+    });
+    return data;
+  }
+
+  async penambahanBatiks(data: BatikAddDTO) {
+    const dataKembar = await this.prismaService.batik.findFirst({
+      where: { typeBatik: data.typeBatik },
+    });
+
+    if (dataKembar)
+      throw new HttpException('Data Sudah Ada', HttpStatus.CONFLICT);
+    await this.prismaService.batik.create({
+      data: {
+        typeBatik: data.typeBatik,
+        stockBatikAwal: data.stockBatikAwal,
+        jenisBatik: data.jenisBatik,
+      },
+    });
+
+    return {
+      mesaage: 'Berhasil ditambah Batik',
+    };
+  }
 
   async pembelianBatik(datass: PembelianDTO) {
     const time = new Date();
@@ -81,20 +110,12 @@ export class BatikService {
     }).format(time);
     console.log(d);
     this.prismaService.$transaction(async (prisma) => {
-      const getBatik = await prisma.batik.findUnique({
-        where: { id: datass.batikId },
-      });
-      await prisma.batik.update({
-        where: { id: datass.batikId },
-        data: { totalBatik: getBatik.totalBatik - datass.quantity },
-      });
-
       const datas = await prisma.pembelian.create({
         data: {
           batikId: datass.batikId,
           customerId: datass.customerId,
           quantity: datass.quantity,
-
+          nomorBon: datass.nomorBon,
           waktuBikin: time,
         },
         include: { batik: true, customer: true },
@@ -102,8 +123,28 @@ export class BatikService {
       await revalidate();
       return datas;
     });
+
     return {
       mesaage: 'Berhasil dibeli',
     };
+  }
+
+  async getDataBatikDinamis() {
+    const users = await this.prismaService.batik.findMany({
+      include: { Pembelian: true },
+    });
+
+    const hasil = users.map((data) => {
+      const total = data.Pembelian.reduce((total, data) => {
+        return total + data.quantity;
+      }, 0);
+
+      return {
+        ...data,
+        stockBatikAwal: data.stockBatikAwal - total,
+      };
+    });
+
+    return hasil;
   }
 }

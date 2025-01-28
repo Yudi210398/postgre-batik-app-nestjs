@@ -24,6 +24,7 @@ export class AuthService {
       secure: true,
       maxAge: 60 * 1000,
     });
+
     res.json({ pesan: `berhasil dapat get Akses dari Refresh Token ` });
   }
 
