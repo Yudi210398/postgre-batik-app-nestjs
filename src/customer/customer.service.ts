@@ -10,7 +10,7 @@ export class CustomerService {
   async createCustomer(customer: CreateCustomerDto) {
     const datass = await this.prismaService.customer.create({
       data: { namaCustomer: customer.namaCustomer },
-    });
+    });3
 
     await revalidate();
     return datass;

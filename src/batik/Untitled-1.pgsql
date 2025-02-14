@@ -7,13 +7,13 @@ SELECT * from admins;
 
 
 INSERT INTO batik ("typeBatik", "stockBatikAwal", "jenisBatik")
-VALUES  ('PA', 50, 'Sutra') ,
+VALUES  ('PA', 50, 'Sutra') , 
         ('NA', 47, 'Sutra'),
         ('NK', 90, 'Katun'),
-        ('IB', 21, 'Katun'),
+        ('IB', 21, 'Katun'), 
         ('A+', 28, 'Katun');
 
-
+ 
         INSERT INTO batik ("typeBatik", "stockBatikAwal", "jenisBatik")
 VALUES   ('MD', 30, 'Katun');
 
