@@ -86,7 +86,7 @@ export class BatikService {
     const dataKembar = await this.prismaService.batik.findFirst({
       where: { typeBatik: data.typeBatik },
     });
-    console.log(dataKembar);
+
     if (dataKembar)
       throw new HttpException('Data Sudah Ada', HttpStatus.CONFLICT);
 
@@ -97,7 +97,7 @@ export class BatikService {
         jenisBatik: data.jenisBatik,
       },
     });
-
+    await revalidate();
     return {
       mesaage: 'Berhasil ditambah Batik',
     };

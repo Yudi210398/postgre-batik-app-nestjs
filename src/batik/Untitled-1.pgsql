@@ -19,7 +19,7 @@ VALUES   ('MD', 30, 'Katun');
 
 
 
-DELETE from batik WHERE "typeBatik" = 'harry';
+DELETE from batik WHERE "id" = 16;
 
 INSERT into customer("namaCustomer") 
 VALUES ('Hana Safira'),
