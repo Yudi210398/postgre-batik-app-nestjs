@@ -28,15 +28,16 @@ export class CustomerController {
   // @Cron(CronExpression.EVERY_10_SECONDS)
   @Get()
   async getCustomer() {
-    console.log(`hai`);
     return await this.customerService.getCustomer();
   }
+
+  // @Get(@Query('fields' fields))
 
   @Get('cari/:id')
   async getPembelianCustomer(@Param('id', ParseIntPipe) id: number) {
     return this.customerService.getPembelianCustomer(id);
-  } 
-  
+  }
+
   @Get(':id')
   async getPembelianCustomers(@Param('id', ParseIntPipe) id: number) {
     return this.customerService.getSeacrhIdCustomer(id);

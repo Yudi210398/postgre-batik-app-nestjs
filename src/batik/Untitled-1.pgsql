@@ -19,13 +19,11 @@ VALUES   ('MD', 30, 'Katun');
 
 
 
-DELETE from batik WHERE "id" = 16;
+DELETE from batik WHERE "id" = 20;
+DELETE from customer WHERE "namaCustomer" = 'sukro';
 
-INSERT into customer("namaCustomer") 
-VALUES ('Hana Safira'),
-        ('Sasa'),
-         ('Enrico'),
-          ('Imam');
+INSERT into customer("namaCustomer","nomorTelp") 
+VALUES     ('sukro', '081381871739');
 
 INSERT into pembelian ("batikId", "quantity", "customerId")
         VALUES (2, 2, 1);

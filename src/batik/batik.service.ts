@@ -133,6 +133,8 @@ export class BatikService {
   async getDataBatikDinamis() {
     const users = await this.prismaService.batik.findMany({
       include: { Pembelian: true },
+
+      orderBy: { id: 'desc' },
     });
 
     const hasil = users.map((data) => {

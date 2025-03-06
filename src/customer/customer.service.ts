@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from 'src/dto/customerDTO/createCustomer.dto';
 import { revalidate } from 'src/func/fetch';
 import { PrismaPostgresService } from 'src/prisma-postgres/prisma-postgres.service';
@@ -8,9 +8,22 @@ export class CustomerService {
   constructor(private prismaService: PrismaPostgresService) {}
 
   async createCustomer(customer: CreateCustomerDto) {
+    const datakembar = await this.prismaService.customer.findFirst({
+      where: { nomorTelp: customer.nomorTelp },
+    });
+
+    if (datakembar)
+      throw new HttpException(
+        { message: ['Nomor telp sudah ada'], statusCode: HttpStatus.CONFLICT },
+        HttpStatus.CONFLICT,
+      );
+
     const datass = await this.prismaService.customer.create({
-      data: { namaCustomer: customer.namaCustomer },
-    });3
+      data: {
+        namaCustomer: customer.namaCustomer,
+        nomorTelp: customer.nomorTelp,
+      },
+    });
 
     await revalidate();
     return datass;
@@ -40,4 +53,6 @@ export class CustomerService {
     revalidate();
     return hasilGEt;
   }
+
+  async getCustomerFilter() {}
 }

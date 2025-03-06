@@ -21,9 +21,13 @@ export class BatikGateway implements OnModuleInit {
       console.log(`konek`);
     });
   }
-  async dapatBatikUpdate() {
+
+  @SubscribeMessage('batik_update')
+  async dapatBatikUpdate(
+    @MessageBody() { limit, page }: { limit: number; page: number },
+  ) {
+    console.log(`dari mana`, limit, page);
     const data = await this.batikService.getDataBatikDinamis();
-    console.log(data, `we`);
     this.server.emit('batik_update', data);
   }
 
