@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
   UsePipes,
@@ -52,7 +53,6 @@ export class BatikController {
 
   @Get('getDataBatik')
   async getBatikData() {
-    console.log(`luka modric`);
     return await this.batikservice.getDataBatikDinamis();
   }
 

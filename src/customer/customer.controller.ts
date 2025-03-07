@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -27,11 +28,9 @@ export class CustomerController {
 
   // @Cron(CronExpression.EVERY_10_SECONDS)
   @Get()
-  async getCustomer() {
-    return await this.customerService.getCustomer();
+  async getCustomer(@Query('fields') fields?: string) {
+    return await this.customerService.getCustomerFilterandGet(fields);
   }
-
-  // @Get(@Query('fields' fields))
 
   @Get('cari/:id')
   async getPembelianCustomer(@Param('id', ParseIntPipe) id: number) {

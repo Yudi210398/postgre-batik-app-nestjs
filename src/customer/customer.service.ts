@@ -54,5 +54,22 @@ export class CustomerService {
     return hasilGEt;
   }
 
-  async getCustomerFilter() {}
+  async getCustomerFilterandGet(fields?: string) {
+    const selectQuery = fields
+      ? fields.split(',')
+      : ['id', 'namaCustomer', 'nomorTelp'];
+
+    const validFiels = ['id', 'namaCustomer', 'nomorTelp'];
+
+    const prismaSelect = selectQuery
+      .filter((field) => validFiels.includes(field))
+      .reduce((acc, fields) => {
+        return { ...acc, [fields]: true };
+      }, {});
+    return fields
+      ? this.prismaService.customer.findMany({ select: prismaSelect })
+      : this.prismaService.customer.findMany({
+          include: { Pembelian: { include: { batik: true } } },
+        });
+  }
 }
