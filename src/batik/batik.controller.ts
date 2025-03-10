@@ -43,22 +43,20 @@ export class BatikController {
     // return await this.batikservice.getBatikPembelian();
   }
 
-  @Patch('update/:id')
-  async updateBatik(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateBatiks,
-  ) {
-    return this.batikservice.updateBatik(id, data);
-  }
-
   @Get('getDataBatik')
   async getBatikData() {
     return await this.batikservice.getDataBatikDinamis();
   }
 
-  @Get('/:id')
+  @Get('/:id(\\d+)')
   async getBatikId(@Param('id', ParseIntPipe) id: number) {
     return await this.batikservice.getSeacrhBatikId(id);
+  }
+
+  @Get('selectbatik')
+  async BatikDinamis(@Query('fields') fields: string) {
+    console.log(fields, `lers`);
+    return await this.batikservice.getDataBatikSelect(fields);
   }
 
   @Post('tambahbatik')
@@ -69,5 +67,13 @@ export class BatikController {
   @Post('beli')
   async beliBatik(@Body() datas: PembelianDTO) {
     return await this.batikservice.pembelianBatik(datas);
+  }
+
+  @Patch('update/:id')
+  async updateBatik(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateBatiks,
+  ) {
+    return this.batikservice.updateBatik(id, data);
   }
 }

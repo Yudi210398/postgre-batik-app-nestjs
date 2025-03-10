@@ -14,10 +14,7 @@ export class CustomerGateway implements OnModuleInit {
 
   constructor(private readonly customerService: CustomerService) {}
   onModuleInit() {
-    this.server.on('connection', (socket) => {
-      console.log(socket.id);
-      console.log(`konek customer`);
-    });
+    this.server.on('connection', (socket) => {});
   }
 
   @SubscribeMessage('customer_update')

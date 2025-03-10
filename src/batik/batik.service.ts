@@ -150,4 +150,22 @@ export class BatikService {
 
     return hasil;
   }
+
+  async getDataBatikSelect(fields: string) {
+    const selectQuery = fields.split(',');
+
+    const validFields = ['id', 'typeBatik'];
+
+    const prismaSelect = selectQuery
+      .filter((field) => validFields.includes(field))
+      .reduce((acc, fieldss) => {
+        return { ...acc, [fieldss]: true };
+      }, {});
+
+    const users = await this.prismaService.batik.findMany({
+      select: prismaSelect,
+    });
+
+    return users;
+  }
 }
