@@ -25,7 +25,7 @@ export class AuthService {
       maxAge: 60 * 1000,
     });
 
-    res.json({ pesan: `berhasil dapat get Akses dari Refresh Token ` });
+    res.json({ pesan: `berhasil dapat get Akses dari Refresh Token` });
   }
 
   async login(user: CreateAdminDTO, res: Response) {
@@ -52,6 +52,7 @@ export class AuthService {
     res.cookie(`jwt`, aksesToken, {
       httpOnly: true,
       secure: false,
+      sameSite: 'strict',
       maxAge: 60 * 60 * 1000,
     });
     res.json({ pesan: `berhasil login` });

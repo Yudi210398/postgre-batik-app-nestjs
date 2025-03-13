@@ -47,6 +47,7 @@ export class CustomerService {
 
   async getCustomer() {
     const hasilGEt = await this.prismaService.customer.findMany({
+      orderBy: { id: 'desc' },
       include: { Pembelian: { include: { batik: true } } },
     });
 
