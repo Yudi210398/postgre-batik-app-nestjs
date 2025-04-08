@@ -9,4 +9,7 @@ export class CreateBatikDto {
 
   @IsNotEmpty({ message: 'Tidak Boleh kosong,' })
   jenisBatik: string;
+
+  @IsNotEmpty({ message: 'Tidak Boleh kosong,' })
+  tanggalString: string;
 }

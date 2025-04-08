@@ -14,11 +14,12 @@ import {
 } from '@nestjs/common';
 import { BatikService } from './batik.service';
 import { CreateBatikDto } from 'src/dto/createBatik.dto';
-import { UpdateBatiks } from 'src/dto/updateBatik.dto';
+// import { UpdateBatiks } from 'src/dto/updateBatik.dto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Request } from 'express';
 import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
+import { UpdateBon } from 'src/dto/pembelian/updateBon.dto';
 
 @UseGuards(JwtGuard)
 @Controller('batiks')
@@ -43,9 +44,19 @@ export class BatikController {
     // return await this.batikservice.getBatikPembelian();
   }
 
+  @Get('getbeliBAtik/:id')
+  async getIdBatikBeli(@Param('id', ParseIntPipe) id: number) {
+    return this.batikservice.getPembelianid(id);
+  }
+
   @Get('getDataBatik')
   async getBatikData() {
     return await this.batikservice.getDataBatikDinamis();
+  }
+
+  @Get('getDataBatikPembelian')
+  async getBatikDataPembelian() {
+    return await this.batikservice.getPembelian();
   }
 
   @Get('/:id(\\d+)')
@@ -53,8 +64,13 @@ export class BatikController {
     return await this.batikservice.getSeacrhBatikId(id);
   }
 
+  @Patch('bonedit/:id')
+  async editNomorBon(@Param('id') id: number, @Body() bon: UpdateBon) {
+    return await this.batikservice.editNomorBon(id, bon);
+  }
+
   @Get('selectbatik')
-  async BatikDinamis(@Query('fields') fields: string) {
+  async batikDinamis(@Query('fields') fields: string) {
     console.log(fields, `lers`);
     return await this.batikservice.getDataBatikSelect(fields);
   }
@@ -69,11 +85,12 @@ export class BatikController {
     return await this.batikservice.pembelianBatik(datas);
   }
 
-  @Patch('update/:id')
+  @Patch('updatebon/edit/:id')
   async updateBatik(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateBatiks,
+    @Body() data: UpdateBon,
   ) {
-    return this.batikservice.updateBatik(id, data);
+    console.log(id, data);
+    return this.batikservice.editNomorBon(id, data);
   }
 }

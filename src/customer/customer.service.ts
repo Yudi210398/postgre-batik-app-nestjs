@@ -40,6 +40,7 @@ export class CustomerService {
   async getSeacrhIdCustomer(id: number) {
     const data = await this.prismaService.pembelian.findMany({
       where: { customerId: id },
+
       include: { batik: true, customer: true },
     });
     return data;

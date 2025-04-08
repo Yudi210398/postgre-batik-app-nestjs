@@ -10,4 +10,6 @@ export class BatikAddDTO {
 
   @IsNotEmpty({ message: 'Jenis Batik Tidak Boleh kosong,' })
   jenisBatik: string;
+
+  stockSaatIni?: number;
 }

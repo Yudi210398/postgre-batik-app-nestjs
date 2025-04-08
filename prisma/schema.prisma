@@ -19,9 +19,11 @@ model Batik {
   stockBatikAwal  Int               @db.Integer
   jenisBatik      String            @db.VarChar(100)
   waktuBikin      DateTime          @default(now())
+  tanggalString   String            @db.VarChar(100)
   Pembelian       Pembelian[]
   penambahanStock penambahanStock[]
   laporanBulanan  laporanBulanan[]
+  stockSaatIni    Int
 
   @@map("batik")
 }
@@ -38,13 +40,14 @@ model Customer {
 model Pembelian {
   id Int @id @default(autoincrement())
 
-  batikId    Int      @db.Integer
-  batik      Batik    @relation(fields: [batikId], references: [id])
-  quantity   Int
-  customerId Int      @db.Integer
-  customer   Customer @relation(fields: [customerId], references: [id])
-  waktuBikin DateTime @default(now())
-  nomorBon   String   @unique @default(dbgenerated("gen_random_uuid()"))
+  batikId       Int      @db.Integer
+  batik         Batik    @relation(fields: [batikId], references: [id])
+  quantity      Int
+  customerId    Int      @db.Integer
+  customer      Customer @relation(fields: [customerId], references: [id])
+  waktuBikin    DateTime @default(now())
+  nomorBon      String   @default("data belum diisi")
+  tanggalString String   @db.VarChar(100)
 
   @@map("pembelian")
 }
@@ -82,3 +85,9 @@ model penambahanStock {
 
   @@map("PenambahanStock")
 }
+
+// ! Prisma Generate dengan nama perubahab
+// * npx prisma migrate dev --create-only --name nama_yang_kamu_mau
+
+// ! Prisma Generate Fix
+// * npx prisma migrate dev

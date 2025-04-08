@@ -7,16 +7,21 @@ import { DateTime } from 'luxon';
 import { JwtPayload } from 'src/func/interface';
 import { revalidate } from 'src/func/fetch';
 import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
+import { UpdateBon } from 'src/dto/pembelian/updateBon.dto';
 @Injectable()
 export class BatikService {
   constructor(private prismaService: PrismaPostgresService) {}
 
   async createBatik(datas: CreateBatikDto) {
+    const time = new Date();
+    const tanggalResmi = new Intl.DateTimeFormat('id-ID').format(time);
     return await this.prismaService.batik.create({
       data: {
         typeBatik: datas.typeBatik,
         stockBatikAwal: +datas.stockBatikAwal,
         jenisBatik: datas.jenisBatik,
+        tanggalString: tanggalResmi,
+        stockSaatIni: +datas.stockBatikAwal,
       },
     });
   }
@@ -26,6 +31,23 @@ export class BatikService {
       include: { Pembelian: { include: { customer: true } } },
     });
     return hasilGEt;
+  }
+
+  async editNomorBon(params: number, bon: UpdateBon) {
+    const id = +params;
+
+    const findId = await this.prismaService.pembelian.findFirst({
+      where: { id },
+    });
+
+    if (!findId) throw new HttpException('Data tidak ditemukan', 404);
+
+    const findIdUpdate = await this.prismaService.pembelian.update({
+      where: { id },
+      data: { nomorBon: bon.nomorBon },
+    });
+
+    return findIdUpdate;
   }
 
   async getBatikPembelian(datass: JwtPayload) {
@@ -59,6 +81,7 @@ export class BatikService {
   async getDataPembelian() {
     const hasilGet = await this.prismaService.pembelian.findMany({
       include: { batik: true, customer: true },
+      orderBy: { customerId: 'desc' },
     });
     return hasilGet;
   }
@@ -83,6 +106,8 @@ export class BatikService {
   }
 
   async penambahanBatiks(data: BatikAddDTO) {
+    const time = new Date();
+    const tanggalResmi = new Intl.DateTimeFormat('id-ID').format(time);
     const dataKembar = await this.prismaService.batik.findFirst({
       where: { typeBatik: data.typeBatik },
     });
@@ -95,6 +120,8 @@ export class BatikService {
         typeBatik: data.typeBatik,
         stockBatikAwal: data.stockBatikAwal,
         jenisBatik: data.jenisBatik,
+        tanggalString: tanggalResmi,
+        stockSaatIni: data.stockBatikAwal,
       },
     });
     await revalidate();
@@ -105,29 +132,54 @@ export class BatikService {
 
   async pembelianBatik(datass: PembelianDTO) {
     const time = new Date();
-    const d = new Intl.DateTimeFormat('id-ID', {
-      dateStyle: 'full',
-      timeStyle: 'medium',
-    }).format(time);
-    console.log(d);
-    this.prismaService.$transaction(async (prisma) => {
-      const datas = await prisma.pembelian.create({
+    const tanggalResmi = new Intl.DateTimeFormat('id-ID').format(time);
+    const cekbatik = await this.prismaService.batik.findFirst({
+      where: { id: datass.batikId },
+    });
+
+    const cekCustomer = await this.prismaService.customer.findFirst({
+      where: { id: datass.customerId },
+    });
+
+    const cekQuantityStock = await this.prismaService.laporanBulanan.findMany();
+
+    if (cekQuantityStock.length !== 0) {
+      // ? cek kalo data gk kosong mau apa ? mau cek quantity bulanannya lebih gk dari pembelian kalo lebih return error stock tidak mencukupi pembelian
+    } else {
+      if (datass.quantity > cekbatik.stockSaatIni)
+        throw new HttpException(
+          'Quantity melebihi data stock',
+          HttpStatus.CONFLICT,
+        );
+    }
+
+    if (!cekbatik)
+      throw new HttpException(
+        'Type Batik tidak ditemukan',
+        HttpStatus.NOT_FOUND,
+      );
+    else if (!cekCustomer)
+      throw new HttpException('Customer tidak ditemukan', HttpStatus.NOT_FOUND);
+
+    return await this.prismaService.$transaction(async (prisma) => {
+      const beli = await prisma.pembelian.create({
         data: {
           batikId: datass.batikId,
           customerId: datass.customerId,
           quantity: datass.quantity,
           nomorBon: datass.nomorBon,
           waktuBikin: time,
+          tanggalString: tanggalResmi,
         },
-        include: { batik: true, customer: true },
       });
-      await revalidate();
-      return datas;
-    });
 
-    return {
-      mesaage: 'Berhasil dibeli',
-    };
+      await prisma.batik.update({
+        where: { id: datass.batikId },
+        data: { stockSaatIni: { decrement: datass.quantity } },
+      });
+
+      return beli;
+    });
   }
 
   async getDataBatikDinamis() {
@@ -149,6 +201,22 @@ export class BatikService {
     });
 
     return hasil;
+  }
+
+  async getPembelian() {
+    return await this.prismaService.pembelian.findMany({
+      include: { batik: true, customer: true },
+      orderBy: { id: 'desc' },
+    });
+  }
+
+  async getPembelianid(id: number) {
+    const data = await this.prismaService.pembelian.findFirst({
+      where: { id: id },
+      include: { batik: true, customer: true },
+    });
+    if (!data) throw new HttpException('data tidak ditemukan', 404);
+    return data;
   }
 
   async getDataBatikSelect(fields: string) {

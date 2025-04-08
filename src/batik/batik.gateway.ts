@@ -31,6 +31,15 @@ export class BatikGateway implements OnModuleInit {
     this.server.emit('batik_update', data);
   }
 
+  @SubscribeMessage('pembelian_update')
+  async pembelianBatikUpdate(
+    @MessageBody() { limit, page }: { limit: number; page: number },
+  ) {
+    console.log(limit, page, `cak bgt gw`);
+    const data = await this.batikService.getPembelian();
+    this.server.emit('pembelian_update', data);
+  }
+
   @SubscribeMessage('update')
   async handleClientReq(@MessageBody() mesaage: any) {
     this.server.emit('events', { pesan: 'Hai', body: mesaage });
