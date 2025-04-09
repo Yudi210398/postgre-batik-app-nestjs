@@ -8,9 +8,14 @@ import { JwtPayload } from 'src/func/interface';
 import { revalidate } from 'src/func/fetch';
 import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
 import { UpdateBon } from 'src/dto/pembelian/updateBon.dto';
+
 @Injectable()
 export class BatikService {
   constructor(private prismaService: PrismaPostgresService) {}
+
+  async addData(a: number, b: number) {
+    return a + b;
+  }
 
   async createBatik(datas: CreateBatikDto) {
     const time = new Date();
