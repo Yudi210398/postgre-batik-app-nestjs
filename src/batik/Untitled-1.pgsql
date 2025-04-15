@@ -19,7 +19,7 @@ VALUES   ('MD', 30, 'Katun');
 
 
 
-DELETE from batik WHERE "id" = 20;
+DELETE from pembelian WHERE "id" = 4;
 DELETE from customer WHERE "namaCustomer" = 'sukro';
 
 INSERT into customer("namaCustomer","nomorTelp") 

@@ -8,6 +8,7 @@ import { JwtPayload } from 'src/func/interface';
 import { revalidate } from 'src/func/fetch';
 import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
 import { UpdateBon } from 'src/dto/pembelian/updateBon.dto';
+import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 
 @Injectable()
 export class BatikService {
@@ -187,10 +188,16 @@ export class BatikService {
     });
   }
 
-  async getDataBatikDinamis() {
-    const users = await this.prismaService.batik.findMany({
-      include: { Pembelian: true },
+  async getDataBatikDinamis(paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
 
+    const take = limit || 10;
+    const skip = (page - 1) * take || 0;
+
+    const users = await this.prismaService.batik.findMany({
+      skip,
+      take,
+      include: { Pembelian: true },
       orderBy: { id: 'desc' },
     });
 

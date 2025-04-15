@@ -7,6 +7,8 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { BatikService } from './batik.service';
+import { plainToInstance } from 'class-transformer';
+import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class BatikGateway implements OnModuleInit {
@@ -16,24 +18,21 @@ export class BatikGateway implements OnModuleInit {
   constructor(private readonly batikService: BatikService) {}
 
   onModuleInit() {
-    this.server.on('connection', (socket) => {
-      console.log(socket.id);
+    this.server.on('connection', (_socket) => {
       console.log(`konek`);
     });
   }
 
   @SubscribeMessage('batik_update')
-  async dapatBatikUpdate(
-    @MessageBody() { limit, page }: { limit: number; page: number },
-  ) {
-    console.log(`dari mana`, limit, page);
+  async dapatBatikUpdate(@MessageBody() payload: any) {
+    const dto = plainToInstance(PaginationDto, payload);
     const data = await this.batikService.getDataBatikDinamis();
     this.server.emit('batik_update', data);
   }
 
   @SubscribeMessage('pembelian_update')
   async pembelianBatikUpdate(
-    @MessageBody() { limit, page }: { limit: number; page: number },
+    @MessageBody() { page, limit }: { page: number; limit: number },
   ) {
     console.log(limit, page, `cak bgt gw`);
     const data = await this.batikService.getPembelian();

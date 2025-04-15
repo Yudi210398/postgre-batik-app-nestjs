@@ -20,6 +20,7 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Request } from 'express';
 import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
 import { UpdateBon } from 'src/dto/pembelian/updateBon.dto';
+import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 
 @UseGuards(JwtGuard)
 @Controller('batiks')
@@ -50,8 +51,8 @@ export class BatikController {
   }
 
   @Get('getDataBatik')
-  async getBatikData() {
-    return await this.batikservice.getDataBatikDinamis();
+  async getBatikData(@Query() PaginationDto: PaginationDto) {
+    return await this.batikservice.getDataBatikDinamis(PaginationDto);
   }
 
   @Get('getDataBatikPembelian')
@@ -71,7 +72,6 @@ export class BatikController {
 
   @Get('selectbatik')
   async batikDinamis(@Query('fields') fields: string) {
-    console.log(fields, `lers`);
     return await this.batikservice.getDataBatikSelect(fields);
   }
 
@@ -90,7 +90,6 @@ export class BatikController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateBon,
   ) {
-    console.log(id, data);
     return this.batikservice.editNomorBon(id, data);
   }
 }
