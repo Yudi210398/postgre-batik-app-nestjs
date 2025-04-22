@@ -3,9 +3,11 @@ import {
   SubscribeMessage,
   WebSocketServer,
   WebSocketGateway,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { CustomerService } from './customer.service';
+import { Socket } from 'dgram';
 
 @WebSocketGateway(3003, { cors: { origin: '*' } })
 export class CustomerGateway implements OnModuleInit {
@@ -18,8 +20,8 @@ export class CustomerGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('customer_update')
-  async getCustomer() {
+  async getCustomer(@ConnectedSocket() client: Socket) {
     const data = await this.customerService.getCustomer();
-    this.server.emit('customer_update', data);
+    client.emit('customer_update', data);
   }
 }

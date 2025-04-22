@@ -4,11 +4,14 @@ import {
   SubscribeMessage,
   WebSocketServer,
   WebSocketGateway,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { BatikService } from './batik.service';
 import { plainToInstance } from 'class-transformer';
 import { PaginationDto } from 'src/dto/authDTO/paginationDto';
+import { validate } from 'class-validator';
+import { Socket } from 'dgram';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class BatikGateway implements OnModuleInit {
@@ -24,10 +27,30 @@ export class BatikGateway implements OnModuleInit {
   }
 
   @SubscribeMessage('batik_update')
-  async dapatBatikUpdate(@MessageBody() payload: any) {
-    const dto = plainToInstance(PaginationDto, payload);
-    const data = await this.batikService.getDataBatikDinamis();
-    this.server.emit('batik_update', data);
+  async dapatBatikUpdate(
+    @MessageBody() payload: any,
+    @ConnectedSocket() client: Socket,
+  ) {
+    try {
+      const dto = plainToInstance(PaginationDto, payload);
+
+      const errors = await validate(dto);
+
+      if (errors.length > 0) {
+        return client.emit(`batik_update_error`, {
+          message: `invalid payload`,
+          errors,
+        });
+      }
+
+      const data = await this.batikService.getDataBatikDinamis(dto);
+      client.emit('batik_update', data);
+    } catch (error) {
+      client.emit(`batik_update_error`, {
+        message: `something went wrong`,
+        error,
+      });
+    }
   }
 
   @SubscribeMessage('pembelian_update')
