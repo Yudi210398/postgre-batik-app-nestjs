@@ -20,7 +20,6 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { Request } from 'express';
 import { BatikAddDTO } from 'src/dto/BatikDTO/BatikAdd.dto';
 import { UpdateBon } from 'src/dto/pembelian/updateBon.dto';
-import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 
 @UseGuards(JwtGuard)
 @Controller('batiks')
@@ -51,8 +50,8 @@ export class BatikController {
   }
 
   @Get('getDataBatik')
-  async getBatikData(@Query() PaginationDto: PaginationDto) {
-    return await this.batikservice.getDataBatikDinamis(PaginationDto);
+  async getBatikData() {
+    return await this.batikservice.getDataBatikDinamis();
   }
 
   @Get('getDataBatikPembelian')

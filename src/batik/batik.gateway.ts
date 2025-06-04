@@ -43,7 +43,7 @@ export class BatikGateway implements OnModuleInit {
         });
       }
 
-      const data = await this.batikService.getDataBatikDinamis(dto);
+      const data = await this.batikService.getDataBatikDinamis();
       client.emit('batik_update', data);
     } catch (error) {
       client.emit(`batik_update_error`, {
