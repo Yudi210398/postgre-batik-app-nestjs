@@ -188,9 +188,30 @@ export class BatikService {
   }
 
   async getDataBatikDinamis() {
-    const users = await this.prismaService.batik.findMany({});
+    const users = await this.prismaService.batik.findMany({
+      orderBy: { id: 'desc' },
+    });
 
     return users;
+  }
+
+  async getBatikHapus(id: number) {
+    const pembelian = await this.prismaService.pembelian.findFirst({
+      where: { batikId: +id },
+    });
+
+    const findBatik = await this.prismaService.batik.findUnique({
+      where: { id: +id },
+    });
+
+    if (!findBatik) throw new HttpException('Batik tidak ditemukan', 404);
+
+    if (pembelian)
+      throw new HttpException('ada data pembelian tidak dapat dihapus', 409);
+
+    return await this.prismaService.batik.delete({
+      where: { id: +id },
+    });
   }
 
   async getPembelian() {

@@ -13,6 +13,7 @@ import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 import { validate } from 'class-validator';
 import { Socket } from 'dgram';
 
+// @UseGuards(WsJwtGuard)
 @WebSocketGateway({ cors: { origin: '*' } })
 export class BatikGateway implements OnModuleInit {
   @WebSocketServer()
@@ -33,7 +34,7 @@ export class BatikGateway implements OnModuleInit {
   ) {
     try {
       const dto = plainToInstance(PaginationDto, payload);
-
+      console.log(dto, `cak`);
       const errors = await validate(dto);
 
       if (errors.length > 0) {
@@ -44,6 +45,7 @@ export class BatikGateway implements OnModuleInit {
       }
 
       const data = await this.batikService.getDataBatikDinamis();
+      console.log(data);
       client.emit('batik_update', data);
     } catch (error) {
       client.emit(`batik_update_error`, {

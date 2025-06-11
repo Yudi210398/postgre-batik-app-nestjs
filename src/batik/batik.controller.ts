@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -67,6 +68,11 @@ export class BatikController {
   @Patch('bonedit/:id')
   async editNomorBon(@Param('id') id: number, @Body() bon: UpdateBon) {
     return await this.batikservice.editNomorBon(id, bon);
+  }
+
+  @Delete('deletebatik/:id')
+  async deletebatik(@Param('id') id: number) {
+    return await this.batikservice.getBatikHapus(id);
   }
 
   @Get('selectbatik')
