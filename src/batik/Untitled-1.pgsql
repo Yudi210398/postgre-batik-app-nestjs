@@ -6,6 +6,7 @@ SELECT * from admins;
 
 
 
+
 INSERT INTO batik ("typeBatik", "stockBatikAwal", "jenisBatik")
 VALUES  ('PA', 50, 'Sutra') , 
         ('NA', 47, 'Sutra'),
