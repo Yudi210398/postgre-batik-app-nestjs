@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { PembelianModule } from './pembelian/pembelian.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     CustomerModule,
     AuthModule,
     CommonModule,
+    PembelianModule,
   ],
   controllers: [],
   providers: [],

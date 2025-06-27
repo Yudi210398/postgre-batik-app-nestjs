@@ -83,14 +83,6 @@ export class BatikService {
     return hasilGEt;
   }
 
-  async getDataPembelian() {
-    const hasilGet = await this.prismaService.pembelian.findMany({
-      include: { batik: true, customer: true },
-      orderBy: { customerId: 'desc' },
-    });
-    return hasilGet;
-  }
-
   async updateBatik(id: number, datas: UpdateBatiks) {
     const data = await this.prismaService.batik.update({
       where: { id },
@@ -214,14 +206,7 @@ export class BatikService {
     });
   }
 
-  async getPembelian() {
-    return await this.prismaService.pembelian.findMany({
-      include: { batik: true, customer: true },
-      orderBy: { id: 'desc' },
-    });
-  }
-
-  async getPembelianid(id: number) {
+  async getBeliId(id: number) {
     const data = await this.prismaService.pembelian.findFirst({
       where: { id: id },
       include: { batik: true, customer: true },

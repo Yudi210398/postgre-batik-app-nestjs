@@ -47,7 +47,7 @@ export class BatikController {
 
   @Get('getbeliBAtik/:id')
   async getIdBatikBeli(@Param('id', ParseIntPipe) id: number) {
-    return this.batikservice.getPembelianid(id);
+    return this.batikservice.getBeliId(id);
   }
 
   @Get('getDataBatik')
@@ -55,10 +55,10 @@ export class BatikController {
     return await this.batikservice.getDataBatikDinamis();
   }
 
-  @Get('getDataBatikPembelian')
-  async getBatikDataPembelian() {
-    return await this.batikservice.getPembelian();
-  }
+  // @Get('getDataBatikPembelian')
+  // async getBatikDataPembelian() {
+  //   return await this.batikservice.getPembelian();
+  // }
 
   @Get('/:id(\\d+)')
   async getBatikId(@Param('id', ParseIntPipe) id: number) {

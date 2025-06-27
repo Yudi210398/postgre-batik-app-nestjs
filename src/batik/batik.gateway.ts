@@ -12,6 +12,7 @@ import { plainToInstance } from 'class-transformer';
 import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 import { validate } from 'class-validator';
 import { Socket } from 'dgram';
+import { PembelianService } from 'src/pembelian/pembelian.service';
 
 // @UseGuards(WsJwtGuard)
 @WebSocketGateway({ cors: { origin: '*' } })
@@ -19,7 +20,10 @@ export class BatikGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly batikService: BatikService) {}
+  constructor(
+    private readonly batikService: BatikService,
+    private readonly pembelianService: PembelianService,
+  ) {}
 
   onModuleInit() {
     this.server.on('connection', (_socket) => {
@@ -59,7 +63,7 @@ export class BatikGateway implements OnModuleInit {
     @MessageBody() { page, limit }: { page: number; limit: number },
   ) {
     console.log(limit, page, `cak bgt gw`);
-    const data = await this.batikService.getPembelian();
+    const data = await this.pembelianService.getPembelian();
     this.server.emit('pembelian_update', data);
   }
 
