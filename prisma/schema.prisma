@@ -24,15 +24,17 @@ model Batik {
   penambahanStock penambahanStock[]
   laporanBulanan  laporanBulanan[]
   stockSaatIni    Int
+  transaksiLog    transaksiLog[]
 
   @@map("batik")
 }
 
 model Customer {
-  id           Int         @id @default(autoincrement())
-  namaCustomer String      @db.VarChar(100)
-  nomorTelp    String      @default("Tidak ada") @db.VarChar(100)
+  id           Int            @id @default(autoincrement())
+  namaCustomer String         @db.VarChar(100)
+  nomorTelp    String         @default("Tidak ada") @db.VarChar(100)
   Pembelian    Pembelian[]
+  transaksiLog transaksiLog[]
 
   @@map("customer")
 }
@@ -40,14 +42,15 @@ model Customer {
 model Pembelian {
   id Int @id @default(autoincrement())
 
-  batikId       Int      @db.Integer
-  batik         Batik    @relation(fields: [batikId], references: [id])
+  batikId       Int            @db.Integer
+  batik         Batik          @relation(fields: [batikId], references: [id])
   quantity      Int
-  customerId    Int      @db.Integer
-  customer      Customer @relation(fields: [customerId], references: [id])
-  waktuBikin    DateTime @default(now())
-  nomorBon      String   @default("data belum diisi")
-  tanggalString String   @db.VarChar(100)
+  customerId    Int            @db.Integer
+  customer      Customer       @relation(fields: [customerId], references: [id])
+  waktuBikin    DateTime       @default(now())
+  nomorBon      String         @default("data belum diisi")
+  tanggalString String         @db.VarChar(100)
+  transaksiLog  transaksiLog[]
 
   @@map("pembelian")
 }
@@ -84,6 +87,24 @@ model penambahanStock {
   tanggal          DateTime @default(now())
 
   @@map("PenambahanStock")
+}
+
+model transaksiLog {
+  id Int @id @default(autoincrement())
+
+  batikId       Int?       @db.Integer
+  batik         Batik?     @relation(fields: [batikId], references: [id])
+  customerId    Int?       @db.Integer
+  customer      Customer?  @relation(fields: [customerId], references: [id])
+  keterangan    String?    @db.Text()
+  tanggal       DateTime   @default(now())
+  tanggalString String     @db.VarChar(100)
+  quantity      Int?       @db.Integer
+  pembelianId   Int?       @db.Integer
+  pembelian     Pembelian? @relation(fields: [pembelianId], references: [id])
+  jenis         String // "PENJUALAN", "PENAMBAHAN_STOK", "EDIT_STOK", "CORRECT", etc.
+
+  @@map("transaksiLog")
 }
 
 // ! Prisma Generate dengan nama perubahab

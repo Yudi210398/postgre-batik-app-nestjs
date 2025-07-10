@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { PembelianService } from './pembelian.service';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 
 @UseGuards(JwtGuard)
 @Controller('pembelian')
@@ -11,6 +12,11 @@ export class PembelianController {
   @Get('getDataBatikPembelian')
   async getBatikDataPembelian() {
     return await this.beliService.getPembelian();
+  }
+
+  @Get()
+  async findAll(@Query() pagination: PaginationDto) {
+    return this.beliService.getPembelianPagination(pagination);
   }
 
   @Post('batik')

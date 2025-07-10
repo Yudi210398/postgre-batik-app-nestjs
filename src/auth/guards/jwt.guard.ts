@@ -19,12 +19,12 @@ export class JwtGuard implements CanActivate {
     // const isPublicAccess = this.isPublicRequest(request);
     const token = this.extractTokenFromCookie(request);
     const tokenHeader = this.extractTokenFromHeader(request);
-
+    const secret = '21ac009d-82d8-45d2-9513-f103e6600e51';
     if (!token && !tokenHeader) throw new UnauthorizedException();
     const tokenresult = token ? token : tokenHeader;
     try {
       const payload = await this.jwtService.verifyAsync(tokenresult, {
-        secret: process.env.ACCES_TOKEN,
+        secret: secret,
       });
       request['admin'] = payload;
     } catch {

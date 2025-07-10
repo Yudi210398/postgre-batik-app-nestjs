@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PaginationDto } from 'src/dto/authDTO/paginationDto';
 import { PembelianDTO } from 'src/dto/pembelian/pembelian.dto';
 import { PrismaPostgresService } from 'src/prisma-postgres/prisma-postgres.service';
 
@@ -63,5 +64,18 @@ export class PembelianService {
       include: { batik: true, customer: true },
       orderBy: { id: 'desc' },
     });
+  }
+
+  async getPembelianPagination(pagination: PaginationDto) {
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+    const skip = (page - 1) * limit;
+    const data = await this.prismaService.pembelian.findMany({
+      include: { batik: true, customer: true },
+      skip: skip,
+      take: limit,
+    });
+    const totalData = await this.prismaService.pembelian.count();
+    return { data, totalData };
   }
 }
