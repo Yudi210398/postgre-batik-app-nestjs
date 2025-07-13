@@ -22,7 +22,7 @@ export class PembelianGateway implements OnModuleInit {
 
   onModuleInit() {
     this.server.on('connection', (_socket) => {
-      console.log(`konek, pembelian`);
+      console.log(`konek`);
     });
   }
 

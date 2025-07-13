@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PembelianModule } from './pembelian/pembelian.module';
+import { AuditlogModule } from './auditlog/auditlog.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PembelianModule } from './pembelian/pembelian.module';
     AuthModule,
     CommonModule,
     PembelianModule,
+    AuditlogModule,
   ],
   controllers: [],
   providers: [],

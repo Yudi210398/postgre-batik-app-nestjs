@@ -105,26 +105,45 @@ export class BatikService {
   async penambahanBatiks(data: BatikAddDTO) {
     const time = new Date();
     const tanggalResmi = new Intl.DateTimeFormat('id-ID').format(time);
-    const dataKembar = await this.prismaService.batik.findFirst({
-      where: { typeBatik: data.typeBatik },
-    });
+    try {
+      const result = await this.prismaService.$transaction(async (tx) => {
+        const dataKembar = await tx.batik.findFirst({
+          where: { typeBatik: data.typeBatik },
+        });
 
-    if (dataKembar)
-      throw new HttpException('Data Sudah Ada', HttpStatus.CONFLICT);
+        if (dataKembar)
+          throw new HttpException('Data Sudah Ada', HttpStatus.CONFLICT);
 
-    await this.prismaService.batik.create({
-      data: {
-        typeBatik: data.typeBatik,
-        stockBatikAwal: data.stockBatikAwal,
-        jenisBatik: data.jenisBatik,
-        tanggalString: tanggalResmi,
-        stockSaatIni: data.stockBatikAwal,
-      },
-    });
-    await revalidate();
-    return {
-      mesaage: 'Berhasil ditambah Batik',
-    };
+        const batik = await tx.batik.create({
+          data: {
+            typeBatik: data.typeBatik,
+            stockBatikAwal: data.stockBatikAwal,
+            jenisBatik: data.jenisBatik,
+            tanggalString: tanggalResmi,
+            stockSaatIni: data.stockBatikAwal,
+          },
+        });
+        await revalidate();
+
+        await tx.transaksiLog.create({
+          data: {
+            batikId: batik.id,
+            jenis: 'Pembuatan Batik',
+            tanggal: time,
+            tanggalString: tanggalResmi,
+            keterangan: `pembuatan batik ${batik.jenisBatik} stock ${batik.stockBatikAwal}`,
+          },
+        });
+        return batik;
+      });
+
+      return {
+        mesaage: 'Berhasil ditambah Batik',
+        result,
+      };
+    } catch (err) {
+      return { status: 'failed', message: err.message };
+    }
   }
 
   async pembelianBatik(datass: PembelianDTO) {
